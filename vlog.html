@@ -54,7 +54,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(14,12,10,0.92);
+      background: rgba(14,12,10,1);
       z-index: 100;
       align-items: center;
       justify-content: center;
@@ -146,6 +146,94 @@
         </div>
       </div>
 
+      <div class="video-card rounded-sm" style="height:240px;" onclick="openLightbox('vlog/Whitsunday Islands.MOV')">
+        <video src="vlog/Whitsunday Islands.MOV" muted loop playsinline
+               onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0;">
+        </video>
+        <div class="overlay"></div>
+        <div class="meta">
+          <p class="text-white text-sm font-light">Whitsunday Islands</p>
+          <p class="text-stone-300 text-xs font-light mt-0.5">Queensland · Australia</p>
+        </div>
+      </div>
+
+      <div class="video-card rounded-sm" style="height:240px;" onclick="openLightbox('vlog/Rottnest Island.MOV')">
+        <video src="vlog/Rottnest Island.MOV" muted loop playsinline
+               onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0;">
+        </video>
+        <div class="overlay"></div>
+        <div class="meta">
+          <p class="text-white text-sm font-light">Rottnest Island</p>
+          <p class="text-stone-300 text-xs font-light mt-0.5">Western Australia · Australia</p>
+        </div>
+      </div>
+
+      <div class="video-card rounded-sm" style="height:240px;" onclick="openLightbox('vlog/BBQ.MOV')">
+        <video src="vlog/BBQ.MOV" muted loop playsinline
+               onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0;">
+        </video>
+        <div class="overlay"></div>
+        <div class="meta">
+          <p class="text-white text-sm font-light">BBQ</p>
+          <p class="text-stone-300 text-xs font-light mt-0.5">Perth · Australia</p>
+        </div>
+      </div>
+
+      <div class="video-card rounded-sm" style="height:240px;" onclick="openLightbox('vlog/city tour.mov')">
+        <video src="vlog/city tour.mov" muted loop playsinline
+               onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0;">
+        </video>
+        <div class="overlay"></div>
+        <div class="meta">
+          <p class="text-white text-sm font-light">City Tour</p>
+          <p class="text-stone-300 text-xs font-light mt-0.5">Melbourne · Australia</p>
+        </div>
+      </div>
+
+      <div class="video-card rounded-sm" style="height:240px;" onclick="openLightbox('vlog/maria island.mov')">
+        <video src="vlog/maria island.mov" muted loop playsinline
+               onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0;">
+        </video>
+        <div class="overlay"></div>
+        <div class="meta">
+          <p class="text-white text-sm font-light">Maria Island</p>
+          <p class="text-stone-300 text-xs font-light mt-0.5">Tasmania · Australia</p>
+        </div>
+      </div>
+
+      <div class="video-card rounded-sm" style="height:240px;" onclick="openLightbox('vlog/mona.mov')">
+        <video src="vlog/mona.mov" muted loop playsinline
+               onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0;">
+        </video>
+        <div class="overlay"></div>
+        <div class="meta">
+          <p class="text-white text-sm font-light">MONA</p>
+          <p class="text-stone-300 text-xs font-light mt-0.5">Tasmania · Australia</p>
+        </div>
+      </div>
+
+      <div class="video-card rounded-sm" style="height:240px;" onclick="openLightbox('vlog/new zealand.MOV')">
+        <video src="vlog/new zealand.MOV" muted loop playsinline
+               onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0;">
+        </video>
+        <div class="overlay"></div>
+        <div class="meta">
+          <p class="text-white text-sm font-light">New Zealand</p>
+          <p class="text-stone-300 text-xs font-light mt-0.5">New Zealand</p>
+        </div>
+      </div>
+
+      <div class="video-card rounded-sm" style="height:240px;" onclick="openLightbox('vlog/roundhill farm.MOV')">
+        <video src="vlog/roundhill farm.MOV" muted loop playsinline
+               onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0;">
+        </video>
+        <div class="overlay"></div>
+        <div class="meta">
+          <p class="text-white text-sm font-light">Roundhill Farm</p>
+          <p class="text-stone-300 text-xs font-light mt-0.5">Christchurch · New Zealand</p>
+        </div>
+      </div>
+
     </div>
 
     <!-- Lightbox -->
@@ -168,6 +256,7 @@
     const lightboxVideo = document.getElementById('lightbox-video');
 
     function openLightbox(src) {
+      document.querySelectorAll('.video-card video').forEach(v => { v.pause(); v.currentTime = 0; });
       lightboxVideo.src = src;
       lightboxVideo.play();
       lightbox.classList.add('open');
