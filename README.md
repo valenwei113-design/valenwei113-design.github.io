@@ -27,6 +27,3 @@ Personal homepage — a visual journal of travel, life, and learning.
 
 Plain HTML + Tailwind CSS + SVG animations. No frameworks, no build step. Hosted on GitHub Pages.
 
----
-
-[valenwei.me](https://valenwei.me)
