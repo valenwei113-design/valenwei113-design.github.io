@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>留学 · Journey · Valen Wei</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:      #F2F5F0;
+      --ink:     #1a1a1a;
+      --accent:  #6B8B6E;
+      --accent2: #8AAA8D;
+      --warm:    #C8D8C4;
+      --cool:    #A8BBA5;
+      --line:    rgba(107, 139, 110, 0.3);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Noto Sans SC', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Typography ── */
+    .ff-display { font-family: 'Playfair Display', 'Noto Sans SC', serif; }
+    .ff-mono    { font-family: 'Inter', sans-serif; }
+
+    .rule   { height: 1px; background: var(--line); }
+    .rule-2 { height: 2px; background: var(--accent); }
+
+    .kicker {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.7;
+    }
+
+    .sec-num {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      opacity: 0.5;
+    }
+
+    .sec-title {
+      font-size: clamp(36px, 5vw, 52px);
+      font-weight: 900;
+      letter-spacing: -0.025em;
+      line-height: 1.08;
+      color: var(--ink);
+    }
+
+    .body-sm {
+      font-size: 15.5px;
+      font-weight: 400;
+      line-height: 1.75;
+      color: var(--ink);
+      opacity: 0.8;
+    }
+    .body-xs {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.7;
+      color: var(--ink);
+      opacity: 0.75;
+    }
+
+    /* ── Hero ── */
+    .hero-wrap {
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Big number ── */
+    .big-num {
+      font-size: clamp(72px, 10vw, 120px);
+      font-weight: 900;
+      line-height: 0.88;
+      letter-spacing: -0.04em;
+      color: var(--accent);
+    }
+
+    /* ── Stat pill ── */
+    .stat-pill {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      background: rgba(107,139,110,0.1);
+      border: 1px solid rgba(107,139,110,0.22);
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+    .stat-pill span {
+      font-size: 11px;
+      font-weight: 500;
+      opacity: 0.6;
+    }
+
+    /* ── Uni card ── */
+    .uni-card {
+      position: relative;
+      padding: 32px 28px 28px;
+      background: #fff;
+      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.06);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .uni-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+    }
+    .uni-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 6px 6px 0 0;
+    }
+    .uni-de {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.55;
+      margin-bottom: 6px;
+    }
+    .uni-zh {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin-bottom: 14px;
+      color: var(--ink);
+    }
+
+    /* ── Step card ── */
+    .step-card {
+      position: relative;
+      padding: 28px 24px 24px;
+      text-align: center;
+      background: #fff;
+    }
+    .step-card:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 20%;
+      height: 60%;
+      width: 1px;
+      background: var(--line);
+    }
+    .step-num-circle {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      font-size: 24px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .step-kw {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.55;
+      margin-bottom: 6px;
+    }
+    .step-card .body-xs { font-size: 14px; }
+
+    /* ── Tool card ── */
+    .tool-card {
+      padding: 28px 28px 24px;
+      background: #fff;
+      border-radius: 6px;
+      border-left: 3px solid var(--accent);
+    }
+    .tool-card.dark {
+      background: #1a1a1a;
+    }
+    .tool-card.dark .tool-name { color: #fff; }
+    .tool-card.dark .body-xs { color: rgba(255,255,255,0.6); }
+    .tool-name {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .tool-sub {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.55;
+      margin-bottom: 16px;
+    }
+
+    /* ── Cost table ── */
+    .cost-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line);
+      gap: 16px;
+    }
+    .cost-label { font-size: 15.5px; font-weight: 550; }
+    .cost-sub  { font-size: 12.5px; font-weight: 400; opacity: 0.55; margin-top: 3px; }
+    .cost-val  { font-size: 16px; font-weight: 700; white-space: nowrap; color: var(--accent); }
+    .cost-val span { font-size: 12px; font-weight: 400; opacity: 0.5; }
+
+    /* ── Highlight box ── */
+    .hl-box {
+      background: #fff;
+      border-radius: 6px;
+      padding: 32px 28px;
+      border-top: 4px solid var(--accent);
+    }
+    .hl-box.dark {
+      background: #1a1a1a;
+    }
+    .hl-box.dark .kicker { color: var(--accent2); }
+    .hl-box.dark .body-xs { color: rgba(255,255,255,0.6); }
+
+    /* ── Cert row ── */
+    .cert-row {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .cert-n {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      opacity: 0.45;
+      flex-shrink: 0;
+      width: 22px;
+    }
+    .cert-row span { font-size: 15px; font-weight: 500; }
+
+    /* ── ECTS row ── */
+    .ects-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .ects-val { font-size: 15px; font-weight: 700; color: var(--accent); }
+
+    /* ── Grade grid ── */
+    .grade-cell {
+      text-align: center;
+      padding: 14px 0;
+      border-radius: 4px;
+      background: rgba(107,139,110,0.04);
+      border: 1px solid rgba(107,139,110,0.1);
+    }
+    .grade-cell.best {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .grade-cell.warn {
+      border: 1.5px solid var(--accent);
+      background: transparent;
+    }
+    .grade-num {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .grade-cell.best .grade-num { color: #fff; }
+    .grade-lbl {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.45;
+      margin-top: 2px;
+    }
+    .grade-cell.best .grade-lbl { color: rgba(255,255,255,0.7); }
+
+    /* ── Warn card ── */
+    .warn-card {
+      background: #1a1a1a;
+      border-radius: 6px;
+      padding: 32px 28px;
+      border: 2px solid var(--accent);
+      position: relative;
+    }
+    .warn-card::after {
+      content: '';
+      position: absolute;
+      top: -2px; right: 40px; left: 40px;
+      height: 2px;
+      background: #1a1a1a;
+    }
+    .warn-tag {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: inline-block;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 4px;
+    }
+    .warn-card .body-sm { color: rgba(255,255,255,0.75); font-size: 15.5px; }
+
+    /* ── Tag badge ── */
+    .tag {
+      display: inline-block;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border: 1.5px solid var(--accent);
+      padding: 3px 12px;
+      border-radius: 3px;
+      color: var(--accent);
+    }
+
+    /* ── Animation ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up {
+      opacity: 0;
+      animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+
+    /* ── Lightbox ── */
+    #lightbox {
+      position: fixed; inset: 0;
+      background: rgba(59,46,40,0.96); z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    #lightbox.open { opacity: 1; pointer-events: all; }
+    #lightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; }
+    #lightbox-close {
+      position: absolute; top: 24px; right: 28px;
+      color: rgba(255,255,255,0.35); font-size: 28px; cursor: pointer;
+      transition: color 0.2s; user-select: none;
+    }
+    #lightbox-close:hover { color: #fff; }
+
+    /* ── Divider ornament ── */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 8px 0;
+    }
+    .section-divider::before,
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+    .section-divider span {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.3;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav style="position:fixed; top:0; width:100%; background:rgba(242,245,240,0.94); backdrop-filter:blur(10px); border-bottom:1.5px solid var(--line); z-index:10;">
+    <div style="max-width:1080px; margin:0 auto; padding:14px 32px; display:flex; justify-content:space-between; align-items:center;">
+      <a href="story.html" style="display:flex; align-items:center; gap:6px; font-size:9.5px; font-weight:700; letter-spacing:0.24em; text-transform:uppercase; color:var(--accent); text-decoration:none; opacity:0.5; transition:opacity 0.2s;"
+         onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">
+        ← Journey
+      </a>
+    </div>
+  </nav>
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <div style="max-width:1080px; margin:0 auto; padding:160px 32px 64px;" class="fade-up">
+    <p class="kicker" style="margin-bottom:20px;">Journey · Study Abroad</p>
+    <div style="display:flex; align-items:flex-end; gap:48px;">
+      <!-- Left: title -->
+      <div style="flex:0 0 auto;">
+        <h1 style="font-family:'Playfair Display','Noto Sans SC',serif; font-size:clamp(72px,9vw,120px); font-weight:900; line-height:1.08; letter-spacing:-0.01em; color:var(--ink); white-space:nowrap;">
+          德国<br>留学
+        </h1>
+        <p style="font-size:14px; font-weight:400; opacity:0.4; margin-top:10px; letter-spacing:0.06em;">Studieren in Deutschland</p>
+      </div>
+      <!-- Right: side-by-side photos -->
+      <div style="flex:1; min-width:0; position:relative; display:flex; gap:0; align-items:flex-end;">
+        <div style="position:absolute; top:-20px; left:-20px; right:0; bottom:0; background:linear-gradient(165deg, #C8D8C4 0%, #8AAA8D 100%); border-radius:0 0 0 100px; transform:rotate(-3deg);"></div>
+        <video src="journey1/IMG_0601.MOV" muted playsinline
+          style="position:relative; z-index:1; flex:1; min-width:0; max-height:460px; object-fit:cover; border-radius:0; box-shadow:0 6px 20px rgba(0,0,0,0.1);"
+        ></video>
+        <video src="journey1/IMG_0588.MOV" muted playsinline
+          style="position:relative; z-index:1; flex:1; min-width:0; max-height:460px; object-fit:cover; border-radius:0; box-shadow:0 6px 20px rgba(0,0,0,0.1);"
+        ></video>
+        <video src="journey1/IMG_0586.MOV" muted playsinline
+          style="position:relative; z-index:1; flex:1; min-width:0; max-height:460px; object-fit:cover; border-radius:0; box-shadow:0 6px 20px rgba(0,0,0,0.1);"
+        ></video>
+      </div>
+    </div>
+  </div>
+
+  <main style="max-width:1080px; margin:0 auto; padding:0 32px 96px;">
+
+    <!-- ═══════════ 01 大学类型 ═══════════ -->
+    <section style="padding:72px 0 64px;" class="fade-up" style="animation-delay:0.1s;">
+      <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:12px;">
+        <span class="sec-num">01</span>
+        <h2 class="sec-title">大学类型</h2>
+      </div>
+      <p class="body-sm" style="max-width:560px; margin-bottom:48px; font-size:17px;">德国高校体系分三类，选择哪条路取决于你想要的学习重心与职业方向。</p>
+
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
+        <div class="uni-card">
+          <p class="uni-de">Universität</p>
+          <p class="uni-zh">综合大学</p>
+          <p class="body-xs">注重理论研究，学术氛围浓厚。代表院校包括慕尼黑工业大学（TUM）、亚琛工业大学（RWTH）。适合想走学术路线或进入研究型岗位。</p>
+        </div>
+        <div class="uni-card">
+          <p class="uni-de">Hochschule</p>
+          <p class="uni-zh">应用科技大学</p>
+          <p class="body-xs">偏重实践应用，与企业联系紧密，协助寻找实习岗位。就业导向更强，毕业生进入行业的适应期更短。</p>
+        </div>
+        <div class="uni-card">
+          <p class="uni-de">Kunsthochschule</p>
+          <p class="uni-zh">艺术学院</p>
+          <p class="body-xs">专注艺术与设计方向。代表院校有柏林艺术大学（UdK）、包豪斯艺术学院（Bauhaus-Universität Weimar）。</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"><span></span></div>
+
+    <!-- ═══════════ 02 申请流程 ═══════════ -->
+    <section style="padding:64px 0 56px;" class="fade-up">
+      <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:12px;">
+        <span class="sec-num">02</span>
+        <h2 class="sec-title">申请流程</h2>
+      </div>
+      <p class="body-sm" style="max-width:560px; margin-bottom:48px; font-size:17px;">从准备材料到拿到签证，完整的时间线通常需要 6—12 个月。</p>
+
+      <!-- Steps -->
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); margin-bottom:64px; background:#fff; border-radius:8px; overflow:hidden;">
+        <div class="step-card">
+          <div class="step-num-circle">1</div>
+          <p class="step-kw">准备</p>
+          <p class="body-xs" style="margin:0 auto;">准备学历材料<br>预约 APS 面试</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num-circle">2</div>
+          <p class="step-kw">审核</p>
+          <p class="body-xs" style="margin:0 auto;">通过审核<br>获得 APS 证书</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num-circle">3</div>
+          <p class="step-kw">申请</p>
+          <p class="body-xs" style="margin:0 auto;">申请心仪院校<br>等待录取通知书</p>
+        </div>
+        <div class="step-card" style="border:none;">
+          <div class="step-num-circle">4</div>
+          <p class="step-kw">签证</p>
+          <p class="body-xs" style="margin:0 auto;">开设冻结账户<br>申请学生签证</p>
+        </div>
+      </div>
+
+      <!-- Tools -->
+      <p class="kicker" style="margin-bottom:24px;">工具与资源</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+        <div class="tool-card">
+          <p class="tool-name">DAAD</p>
+          <p class="tool-sub">德国学术交流中心</p>
+          <p class="body-xs" style="margin-bottom:8px;">信息平台与奖学金机构，不负责提交申请材料。主要用途：</p>
+          <p class="body-xs" style="margin-bottom:3px;">→ 在 daad.de 搜索专业信息、入学要求、申请截止日期</p>
+          <p class="body-xs">→ 查询奖学金项目（如硕士全额奖学金 Studienstipendium）</p>
+        </div>
+        <div class="tool-card dark">
+          <p class="tool-name">uni-assist</p>
+          <p class="tool-sub">材料提交平台</p>
+          <p class="body-xs">由 HRK（德国高校校长联席会）与 DAAD 联合设立，是大多数德国院校的统一申请材料递交入口。</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"><span></span></div>
+
+    <!-- ═══════════ 03 APS 审核 ═══════════ -->
+    <section style="padding:64px 0 56px;" class="fade-up">
+      <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:12px; flex-wrap:wrap;">
+        <span class="sec-num">03</span>
+        <h2 class="sec-title">APS 审核</h2>
+      </div>
+
+      <div>
+        <div style="margin-bottom:32px;">
+        <p class="body-sm" style="font-size:17px; line-height:1.8; margin-bottom:8px;">APS（Akademische Prüfstelle）即德国驻华大使馆文化处留德人员审核部，是中国大陆学生赴德留学特有的前置要求。</p>
+      </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start;">
+        <div>
+          <p class="kicker" style="margin-bottom:16px;">证书核心内容</p>
+          <div class="hl-box" style="padding:24px 28px;">
+            <div class="cert-row"><span class="cert-n">01</span><span>入学资格认定</span></div>
+            <div class="cert-row"><span class="cert-n">02</span><span>已完成学期数</span></div>
+            <div class="cert-row"><span class="cert-n">03</span><span>巴伐利亚算法均分</span></div>
+            <div class="cert-row" style="border-bottom:none;"><span class="cert-n">04</span><span>毕业高校及专业</span></div>
+          </div>
+        </div>
+        <div>
+          <p class="kicker" style="margin-bottom:16px;">审核流程</p>
+          <div class="hl-box" style="padding:24px 28px;">
+            <p class="body-sm" style="margin-bottom:10px;">① 在线注册并提交学历材料</p>
+            <p class="body-sm" style="margin-bottom:10px;">② 等候审核部通知面谈时间</p>
+            <p class="body-sm" style="margin-bottom:10px;">③ 参加 20 分钟专业面谈</p>
+            <p class="body-sm">④ 通过后获颁 APS 证书（10 份）</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"><span></span></div>
+
+    <!-- ═══════════ 04 费用全览 ═══════════ -->
+    <section style="padding:64px 0 56px;" class="fade-up">
+      <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:12px;">
+        <span class="sec-num">04</span>
+        <h2 class="sec-title">费用全览</h2>
+      </div>
+      <p class="body-sm" style="max-width:640px; margin-bottom:48px; font-size:17px;">德国留学的核心优势是几乎免学费，但生活成本与签证要求需要提前规划。</p>
+
+      <div style="display:grid; grid-template-columns:1fr 320px; gap:56px; align-items:start;">
+        <div>
+          <div class="cost-row" style="padding-top:0;">
+            <div><p class="cost-label">公立大学注册费</p><p class="cost-sub">含学期交通票，可乘坐当地公共交通</p></div>
+            <p class="cost-val">€150—350<span> /学期</span></p>
+          </div>
+          <div class="cost-row">
+            <div><p class="cost-label">巴符州公立大学 <span style="font-weight:400; font-size:13px; opacity:0.55;">（非欧盟学生）</span></p><p class="cost-sub">Baden-Württemberg，其余各州通常免费</p></div>
+            <p class="cost-val">约 €1,500<span> /学期</span></p>
+          </div>
+          <div class="cost-row">
+            <div><p class="cost-label">私立大学学费</p><p class="cost-sub">视学校和专业差异较大</p></div>
+            <p class="cost-val">€4,000—6,000<span> /学期</span></p>
+          </div>
+          <div class="cost-row" style="border-bottom:none;">
+            <div><p class="cost-label">大城市生活费</p><p class="cost-sub">慕尼黑、法兰克福等，含房租、餐饮、交通</p></div>
+            <p class="cost-val">≥ €1,200<span> /月</span></p>
+          </div>
+        </div>
+
+        <div class="hl-box dark" style="text-align:center;">
+          <p class="kicker" style="margin-bottom:12px; color:var(--accent2);">签证保证金</p>
+          <p class="big-num" style="font-size:clamp(42px,5vw,56px); margin-bottom:12px; color:#fff;">€11,904</p>
+          <p style="font-size:12px; font-weight:600; letter-spacing:0.1em; opacity:0.4; margin-bottom:12px; text-transform:uppercase; color:#fff;">每年 / 冻结账户</p>
+          <p class="body-xs" style="color:rgba(255,255,255,0.6);">约合人民币 <strong style="font-weight:700; color:var(--accent2);">9.3 万</strong>，每月只可提取当月所需生活费。</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"><span></span></div>
+
+    <!-- ═══════════ 05 学分与考核 ═══════════ -->
+    <section style="padding:64px 0 56px;" class="fade-up">
+      <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:12px;">
+        <span class="sec-num">05</span>
+        <h2 class="sec-title">学分与考核</h2>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:56px;">
+        <div>
+          <p class="kicker" style="margin-bottom:18px;">ECTS 学分制</p>
+          <div class="hl-box" style="padding:20px 24px; margin-bottom:36px;">
+            <div class="ects-row" style="padding-top:0;">
+              <span class="body-sm" style="font-size:14px;">1 学年</span>
+              <span class="ects-val">60 ECTS</span>
+            </div>
+            <div class="ects-row">
+              <span class="body-sm" style="font-size:14px;">60 ECTS 对应学习时长</span>
+              <span class="ects-val">1,500—1,800 小时</span>
+            </div>
+            <div class="ects-row" style="border-bottom:none;">
+              <span class="body-sm" style="font-size:14px;">硕士所需总学分</span>
+              <span class="ects-val">120 ECTS（4 学期）</span>
+            </div>
+          </div>
+
+          <p class="kicker" style="margin-bottom:14px;">评分系统</p>
+          <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:4px; margin-bottom:8px;">
+            <div class="grade-cell best"><p class="grade-num">1</p><p class="grade-lbl">优秀</p></div>
+            <div class="grade-cell"><p class="grade-num">2</p><p class="grade-lbl">良好</p></div>
+            <div class="grade-cell"><p class="grade-num">3</p><p class="grade-lbl">中等</p></div>
+            <div class="grade-cell"><p class="grade-num">4</p><p class="grade-lbl">及格</p></div>
+            <div class="grade-cell warn"><p class="grade-num">5</p><p class="grade-lbl">不及格</p></div>
+          </div>
+          <p style="font-size:12.5px; font-weight:400; opacity:0.45;">* 分数越低越好，1 分为最高分</p>
+        </div>
+
+        <div class="warn-card">
+          <p class="warn-tag">宽进严出</p>
+          <p class="body-sm" style="margin-bottom:14px; font-size:17px;">德国大学入学门槛不高，但毕业绝非易事，部分课程挂科率高达 <strong style="font-weight:700; opacity:1;">70%</strong> 以上。</p>
+          <p class="body-sm" style="font-size:17px; margin-bottom:14px;">每门课通常最多补考三次，若专业必修课第三次仍未通过，将在全德国范围内被永久禁止继续攻读该专业。</p>
+          <p class="body-sm" style="font-size:17px;">教授不会降低标准，国际学生需做好充足准备应对高强度学术要求。</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"><span></span></div>
+
+    <!-- ═══════════ 06 学习生活 ═══════════ -->
+    <section style="padding:64px 0 56px;" class="fade-up">
+      <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:12px;">
+        <span class="sec-num">06</span>
+        <h2 class="sec-title">学习生活</h2>
+      </div>
+      <div style="display:flex; gap:0; align-items:flex-end;">
+        <img src="journey1/IMG_7429.jpg" alt="" class="gallery-img" style="flex:1; min-width:0; max-height:360px; object-fit:cover; cursor:pointer;">
+        <img src="journey1/IMG_7431.jpg" alt="" class="gallery-img" style="flex:1; min-width:0; max-height:360px; object-fit:cover; cursor:pointer;">
+        <img src="journey1/IMG_7432.jpg" alt="" class="gallery-img" style="flex:1; min-width:0; max-height:360px; object-fit:cover; cursor:pointer;">
+      </div>
+    </section>
+
+    <div class="section-divider"><span></span></div>
+
+    <!-- ═══════════ 07 传统文化 ═══════════ -->
+    <section style="padding:64px 0 56px;" class="fade-up">
+      <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:12px;">
+        <span class="sec-num">07</span>
+        <h2 class="sec-title">传统文化</h2>
+      </div>
+      <!-- Photos row -->
+      <div style="display:flex; gap:0; margin-bottom:4px;">
+        <img src="journey1/IMG_7433.jpg" alt="" class="gallery-img" style="flex:1; min-width:0; max-height:280px; object-fit:cover; cursor:pointer;">
+        <img src="journey1/IMG_7436.jpg" alt="" class="gallery-img" style="flex:1; min-width:0; max-height:280px; object-fit:cover; cursor:pointer;">
+        <img src="journey1/IMG_7434.jpg" alt="" class="gallery-img" style="flex:1; min-width:0; max-height:280px; object-fit:cover; cursor:pointer;">
+      </div>
+      <!-- Videos row -->
+      <div style="display:flex; gap:0;">
+        <video src="journey1/GMMM3951.MP4" controls playsinline
+          style="flex:1; min-width:0; max-height:280px; object-fit:cover;"
+        ></video>
+        <video src="journey1/242425c6cb4703ad2e79422f6882ca.MP4" controls playsinline
+          style="flex:1; min-width:0; max-height:280px; object-fit:cover;"
+        ></video>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Lightbox -->
+  <div id="lightbox" onclick="closeLightbox()">
+    <span id="lightbox-close" onclick="closeLightbox()">×</span>
+    <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
+  </div>
+
+  <footer style="background:#1a1a1a; border-top:2px solid var(--accent);">
+    <div style="max-width:1080px; margin:0 auto; padding:20px 32px; display:flex; justify-content:space-between; align-items:center;">
+      <a href="story.html" style="font-size:9.5px; font-weight:700; letter-spacing:0.24em; text-transform:uppercase; color:var(--accent); text-decoration:none; opacity:0.5; transition:opacity 0.2s;"
+         onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">← Back to Journey</a>
+      <span style="font-size:9.5px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; opacity:0.3; color:#fff;">© 2026 Valen Wei</span>
+    </div>
+  </footer>
+
+  <script>
+    const lightbox    = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    document.querySelectorAll('.photo-slot img, .gallery-img').forEach(img => {
+      img.addEventListener('click', () => {
+        if (!img.src || img.src === window.location.href) return;
+        lightboxImg.src = img.src;
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+  </script>
+</body>
+</html>

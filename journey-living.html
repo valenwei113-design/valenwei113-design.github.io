@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>旅居 · Journey · Valen Wei</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent:  #F5C000;
+      --accent2: #FFD840;
+      --warm:    #FFF0B0;
+      --line:    rgba(245,192,0,0.25);
+    }
+
+    body { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+    h2, h3 { font-family: 'Playfair Display', serif; }
+
+    .accent { color: var(--accent); }
+    .accent-bg { background-color: var(--accent); }
+    .accent-border { border-color: var(--accent2); }
+
+    .kicker {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.7;
+    }
+
+    .photo-slot {
+      background-color: #e7e2dc;
+      overflow: hidden;
+      position: relative;
+      cursor: zoom-in;
+    }
+    .photo-slot img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .photo-slot:hover img { transform: scale(1.04); }
+
+    .pull-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(22px, 3vw, 32px);
+      line-height: 1.5;
+      color: var(--accent);
+      letter-spacing: 0.01em;
+    }
+
+    .chapter-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+    }
+
+    .prose-body {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.9;
+      color: #44403c;
+    }
+
+    .sec-num {
+      font-size: 12px; font-weight: 800; letter-spacing: 0.2em;
+      color: var(--accent); opacity: 0.5;
+    }
+    .sec-title {
+      font-size: clamp(32px, 4vw, 48px); font-weight: 900;
+      letter-spacing: -0.025em; line-height: 1.08; color: #1a1a1a;
+      font-family: 'Playfair Display','Noto Sans SC',serif;
+    }
+    .body-sm { font-size: 15.5px; font-weight: 400; line-height: 1.75; color: #1a1a1a; opacity: 0.8; }
+    .body-xs { font-size: 14px; font-weight: 400; line-height: 1.7; color: #1a1a1a; opacity: 0.75; }
+
+    .hl-box {
+      background: #fff; border-radius: 6px;
+      padding: 32px 28px; border-top: 4px solid var(--accent);
+    }
+    .hl-box.dark { background: #1a1a1a; }
+    .hl-box.dark .body-xs { color: rgba(255,255,255,0.65); opacity: 1; }
+
+    .tool-card {
+      padding: 28px 28px 24px; background: #fff;
+      border-radius: 6px; border-left: 3px solid var(--accent);
+    }
+    .tool-card.dark { background: #1a1a1a; }
+    .tool-card.dark .tool-name { color: #fff; }
+    .tool-card.dark .body-xs { color: rgba(255,255,255,0.65); opacity: 1; }
+    .tool-name { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 4px; color: #1a1a1a; }
+    .tool-sub {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--accent); opacity: 0.6; margin-bottom: 14px;
+    }
+
+    .tip-row {
+      display: flex; align-items: baseline; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid rgba(245,192,0,0.2);
+    }
+    .tip-row:last-child { border-bottom: none; }
+    .tip-n { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: var(--accent); opacity: 0.5; flex-shrink: 0; width: 20px; }
+
+    .section-divider { display:flex; align-items:center; gap:16px; margin:8px 0; }
+    .section-divider::before, .section-divider::after { content:''; flex:1; height:1px; background:rgba(245,192,0,0.25); }
+    .section-divider span { width:5px; height:5px; border-radius:50%; background:var(--accent); opacity:0.35; flex-shrink:0; }
+
+    #map-tooltip {
+      display: none;
+      position: fixed;
+      background: rgba(28,25,23,0.88);
+      color: #fafaf9;
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 3px;
+      pointer-events: none;
+      z-index: 100;
+      white-space: nowrap;
+    }
+
+    #lightbox {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #lightbox.open { opacity: 1; pointer-events: all; }
+    #lightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; box-shadow: 0 8px 48px rgba(0,0,0,0.5); }
+    #lightbox-close {
+      position: absolute; top: 24px; right: 28px;
+      color: rgba(255,255,255,0.5); font-size: 28px; font-weight: 300;
+      cursor: pointer; line-height: 1; transition: color 0.2s; user-select: none;
+    }
+    #lightbox-close:hover { color: #fff; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { opacity: 0; animation: fadeUp 0.8s ease forwards; }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+  <!-- Nav -->
+  <nav class="fixed top-0 w-full bg-stone-50/90 backdrop-blur-sm z-10 border-b border-stone-200">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="story.html"
+         class="flex items-center gap-2 text-stone-400 hover:text-stone-700 transition-colors"
+         style="font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:0.1em;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Journey
+      </a>
+    </div>
+  </nav>
+
+  <div style="max-width:1080px; margin:0 auto; padding:100px 32px 64px;" class="fade-up">
+    <p class="kicker" style="margin-bottom:20px;">Journey · Living</p>
+    <div style="display:flex; align-items:flex-end; gap:48px;">
+      <div style="flex:0 0 auto;">
+        <h1 style="font-family:'Playfair Display','Noto Sans SC',serif; font-size:clamp(72px,9vw,120px); font-weight:900; line-height:1.08; letter-spacing:-0.01em; color:#1a1a1a; white-space:nowrap;">
+          旅居<br>生活
+        </h1>
+        <p style="font-size:14px; font-weight:400; opacity:0.4; margin-top:10px; letter-spacing:0.06em;">Places I passed through briefly,<br>but left pieces of my heart in.</p>
+      </div>
+      <div style="flex:1; min-width:0; position:relative; height:380px;">
+        <div style="position:absolute; top:0; left:20px; right:0; bottom:30px; background:linear-gradient(165deg, #FFF0B0 0%, #F5C000 100%); border-radius:0 0 0 100px; transform:rotate(-3deg);"></div>
+        <div id="world-map" style="position:relative; z-index:1; width:100%; height:100%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="map-tooltip"></div>
+
+  <div class="max-w-5xl mx-auto px-6 pb-32" style="padding-top:80px;">
+    <!-- ── Chapter 01 · New Zealand ── -->
+    <section class="mb-24 fade-up" style="animation-delay:0.2s;">
+      <div class="flex items-baseline justify-between mb-8 border-b border-stone-200 pb-5">
+        <div>
+          <p class="chapter-label text-stone-600 mb-1">01 · New Zealand</p>
+          <h2 class="text-3xl font-bold text-stone-800">Christchurch</h2>
+        </div>
+        <span class="text-sm text-stone-400 font-light" style="font-family:'Cormorant Garamond',serif; letter-spacing:0.08em;">2024</span>
+      </div>
+
+      <div class="grid grid-cols-12 gap-2" style="background:#F5C000;">
+        <div class="col-span-8">
+          <div class="photo-slot w-full" style="height:340px;">
+            <img src="new zealand/IMG_9459.JPG" alt="New Zealand" />
+          </div>
+        </div>
+        <div class="col-span-4">
+          <div class="photo-slot w-full" style="height:340px;">
+            <img src="new zealand/IMG_9460.JPG" alt="New Zealand" />
+          </div>
+        </div>
+        <div class="col-span-6">
+          <div class="photo-slot w-full" style="height:280px;">
+            <img src="new zealand/IMG_9455.JPG" alt="New Zealand" />
+          </div>
+        </div>
+        <div class="col-span-6">
+          <div class="photo-slot w-full" style="height:280px;">
+            <img src="new zealand/IMG_9456.JPG" alt="New Zealand" />
+          </div>
+        </div>
+        <div class="col-span-9">
+          <div class="photo-slot w-full" style="height:280px;">
+            <img src="new zealand/IMG_9610.JPG" alt="New Zealand" />
+          </div>
+        </div>
+        <div class="col-span-3">
+          <div class="photo-slot w-full" style="height:280px;">
+            <img src="new zealand/IMG_9665.JPG" alt="New Zealand" />
+          </div>
+        </div>
+        <div class="col-span-4">
+          <div class="photo-slot w-full" style="height:340px;">
+            <img src="new zealand/IMG_9725.JPG" alt="New Zealand" />
+          </div>
+        </div>
+        <div class="col-span-8">
+          <div class="photo-slot w-full" style="height:340px;">
+            <img src="new zealand/IMG_9712.JPG" alt="New Zealand" />
+          </div>
+        </div>
+        <div class="col-span-6">
+          <div class="photo-slot w-full" style="height:280px;">
+            <img src="new zealand/IMG_9698.JPG" alt="New Zealand" />
+          </div>
+        </div>
+        <div class="col-span-6">
+          <div class="photo-slot w-full" style="height:280px;">
+            <img src="new zealand/455215CD-1A52-4F7D-A538-0DBF5A119D87.JPG" alt="New Zealand" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Video -->
+      <div class="mt-2 w-full overflow-hidden" style="height:480px; background:#e7e2dc; cursor:pointer; position:relative;">
+        <video id="nz-farm-video" autoplay muted loop playsinline
+               style="width:100%; height:100%; object-fit:cover; display:block;">
+          <source src="new zealand/roundhill farm.MOV" type="video/mp4" />
+        </video>
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s;" id="nz-play-hint">
+          <div style="width:52px; height:52px; border-radius:50%; background:rgba(0,0,0,0.45); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center;">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="5,2 16,9 5,16"/></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Chapter 02 · Norway ── -->
+    <section class="mb-24 fade-up" style="animation-delay:0.3s;">
+      <div class="flex items-baseline justify-between mb-8 border-b border-stone-200 pb-5">
+        <div>
+          <p class="chapter-label text-stone-600 mb-1">02 · Norway</p>
+          <h2 class="text-3xl font-bold text-stone-800">Odda</h2>
+        </div>
+        <span class="text-sm text-stone-400 font-light" style="font-family:'Cormorant Garamond',serif; letter-spacing:0.08em;">2025</span>
+      </div>
+
+      <div class="grid grid-cols-12 gap-2" style="background:#F5C000;">
+        <div class="col-span-8">
+          <div class="photo-slot w-full" style="height:340px;">
+            <img src="norway/IMG_1674.JPG" alt="Norway" />
+          </div>
+        </div>
+        <div class="col-span-4">
+          <div class="photo-slot w-full" style="height:340px;">
+            <img src="norway/IMG_1334.JPG" alt="Norway" />
+          </div>
+        </div>
+        <div class="col-span-4">
+          <div class="photo-slot w-full" style="height:400px;">
+            <img src="norway/IMG_1285.JPG" alt="Norway" />
+          </div>
+        </div>
+        <div class="col-span-8">
+          <div class="photo-slot w-full" style="height:400px;">
+            <img src="norway/IMG_1378.JPG" alt="Norway" />
+          </div>
+        </div>
+        <div class="col-span-12">
+          <div class="photo-slot w-full" style="height:280px;">
+            <img src="norway/IMG_1312.JPG" alt="Norway" />
+          </div>
+        </div>
+        <div class="col-span-8">
+          <div class="photo-slot w-full" style="height:400px;">
+            <img src="norway/IMG_1766.JPG" alt="Norway" />
+          </div>
+        </div>
+        <div class="col-span-4">
+          <div class="photo-slot w-full" style="height:400px;">
+            <img src="norway/6a47e87f-d578-4786-b698-090e87c71d78.JPG" alt="Norway" />
+          </div>
+        </div>
+        <div class="col-span-12">
+          <div class="photo-slot w-full" style="height:280px;">
+            <img src="norway/IMG_1825.JPG" alt="Norway" />
+          </div>
+        </div>
+        <div class="col-span-6">
+          <div class="photo-slot w-full" style="height:280px;">
+            <img src="norway/IMG_1854.JPG" alt="Norway" />
+          </div>
+        </div>
+        <div class="col-span-6">
+          <div class="photo-slot w-full" style="height:280px;">
+            <img src="norway/IMG_1892.JPG" alt="Norway" />
+          </div>
+        </div>
+        <div class="col-span-12">
+          <div class="photo-slot w-full" style="height:320px;">
+            <img src="norway/IMG_1907.JPG" alt="Norway" />
+          </div>
+        </div>
+        <div class="col-span-6">
+          <div class="photo-slot w-full" style="height:280px;">
+            <img src="norway/IMG_2137.JPG" alt="Norway" />
+          </div>
+        </div>
+        <div class="col-span-6">
+          <div class="photo-slot w-full" style="height:280px;">
+            <img src="norway/IMG_2169.JPG" alt="Norway" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Tips ── -->
+    <section style="padding-top:80px;" class="fade-up" style="animation-delay:0.35s;">
+
+      <div style="margin-bottom:48px; margin-left:calc(-50vw + 50%); margin-right:calc(-50vw + 50%); width:100vw;">
+        <img src="journey1/63dbc992-7764-412a-b574-a47bcce69748.png" alt="" style="width:100%; height:auto; display:block;" />
+      </div>
+
+      <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:12px;">
+        <span class="sec-num">Tips</span>
+        <h2 class="sec-title">旅居指南</h2>
+      </div>
+      <p class="body-sm" style="max-width:560px; margin-bottom:56px;">Things I wish someone had told me.</p>
+
+      <!-- 01 找住处 + 02 预订活动 -->
+      <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:24px;">
+        <span class="sec-num">01</span>
+        <h3 class="sec-title" style="font-size:clamp(22px,2.5vw,30px);">找住处</h3>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:48px;">
+        <div class="hl-box">
+          <p class="kicker" style="margin-bottom:16px;">短期住宿</p>
+          <div class="tip-row"><span class="tip-n">01</span><span class="body-xs">Booking</span></div>
+          <div class="tip-row"><span class="tip-n">02</span><span class="body-xs">Airbnb</span></div>
+          <div class="tip-row"><span class="tip-n">03</span><span class="body-xs">小红书</span></div>
+        </div>
+        <div class="hl-box dark">
+          <p class="kicker" style="margin-bottom:16px; color:var(--accent2);">免费 / 换工</p>
+          <div class="tip-row" style="border-bottom-color:rgba(255,255,255,0.08);"><span class="tip-n">01</span><span class="body-xs">Helpx</span></div>
+          <div class="tip-row" style="border-bottom-color:rgba(255,255,255,0.08);"><span class="tip-n">02</span><span class="body-xs">Couchsurfing</span></div>
+          <div class="tip-row" style="border-bottom-color:rgba(255,255,255,0.08);"><span class="tip-n">03</span><span class="body-xs">Facebook Groups</span></div>
+        </div>
+      </div>
+
+      <div class="section-divider"><span></span></div>
+
+      <!-- 02 预订活动 -->
+      <div style="display:flex; align-items:baseline; gap:14px; margin:40px 0 24px;">
+        <span class="sec-num">02</span>
+        <h3 class="sec-title" style="font-size:clamp(22px,2.5vw,30px);">预订活动</h3>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-bottom:48px;">
+        <div class="tool-card">
+          <p class="tool-name">市政官网</p>
+          <p class="tool-sub">市政 / 景区</p>
+          <p class="body-xs">有很多免费的导览活动。</p>
+        </div>
+        <div class="tool-card">
+          <p class="tool-name">GetYourGuide</p>
+          <p class="tool-sub">活动平台</p>
+          <p class="body-xs">欧洲覆盖广，支持即时确认。</p>
+        </div>
+        <div class="tool-card dark">
+          <p class="tool-name">Klook</p>
+          <p class="tool-sub">亚洲为主</p>
+          <p class="body-xs">亚洲活动覆盖更全。</p>
+        </div>
+      </div>
+
+      <div class="section-divider"><span></span></div>
+
+      <!-- 03 找旅伴 + 04 推荐 App -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:40px;">
+        <div>
+          <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:24px;">
+            <span class="sec-num">03</span>
+            <h3 class="sec-title" style="font-size:clamp(22px,2.5vw,30px);">找旅伴</h3>
+          </div>
+          <div class="hl-box">
+            <div class="tip-row"><span class="tip-n">01</span><span class="body-xs">Facebook Groups</span></div>
+            <div class="tip-row"><span class="tip-n">02</span><span class="body-xs">小红书发帖子</span></div>
+            <div class="tip-row"><span class="tip-n">03</span><span class="body-xs">穷游 App 约伴</span></div>
+            <div class="tip-row"><span class="tip-n">04</span><span class="body-xs">Tinder / Bumble</span></div>
+            <div class="tip-row"><span class="tip-n">05</span><span class="body-xs">路上捡陌生人</span></div>
+            <div class="tip-row"><span class="tip-n">06</span><span class="body-xs">微信附近的人</span></div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:24px;">
+            <span class="sec-num">04</span>
+            <h3 class="sec-title" style="font-size:clamp(22px,2.5vw,30px);">推荐 App</h3>
+          </div>
+          <div class="hl-box dark">
+            <div class="tip-row" style="border-bottom-color:rgba(255,255,255,0.08);"><span class="tip-n">01</span><span class="body-xs">Airalo — eSIM</span></div>
+            <div class="tip-row" style="border-bottom-color:rgba(255,255,255,0.08);"><span class="tip-n">02</span><span class="body-xs">Flixbus — 长途客车</span></div>
+            <div class="tip-row" style="border-bottom-color:rgba(255,255,255,0.08);"><span class="tip-n">03</span><span class="body-xs">Google Maps</span></div>
+            <div class="tip-row" style="border-bottom-color:rgba(255,255,255,0.08);"><span class="tip-n">04</span><span class="body-xs">Grab — 东南亚打车</span></div>
+            <div class="tip-row" style="border-bottom-color:rgba(255,255,255,0.08);"><span class="tip-n">05</span><span class="body-xs">Star Walk — 观星</span></div>
+            <div class="tip-row" style="border-bottom-color:rgba(255,255,255,0.08);"><span class="tip-n">06</span><span class="body-xs">Find a Grave</span></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" onclick="closeLightbox()">
+    <span id="lightbox-close" onclick="closeLightbox()">×</span>
+    <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
+  </div>
+
+  <footer class="border-t border-stone-200">
+    <div class="max-w-5xl mx-auto px-6 py-8 flex justify-between items-center text-xs text-stone-300 font-light">
+      <a href="story.html" class="flex items-center gap-2 text-stone-300 hover:text-stone-600 transition-colors"
+         style="font-family:'Cormorant Garamond',serif; letter-spacing:0.1em;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to Journey
+      </a>
+      <span>© 2026 Valen Wei</span>
+    </div>
+  </footer>
+
+  <script>
+    const farmVideo = document.getElementById('nz-farm-video');
+    const playHint  = document.getElementById('nz-play-hint');
+    farmVideo.parentElement.addEventListener('mouseenter', () => playHint.style.opacity = '1');
+    farmVideo.parentElement.addEventListener('mouseleave', () => playHint.style.opacity = '0');
+    farmVideo.parentElement.addEventListener('click', () => {
+      const v = farmVideo;
+      if (v.requestFullscreen)            v.requestFullscreen();
+      else if (v.webkitRequestFullscreen) v.webkitRequestFullscreen();
+      else if (v.webkitEnterFullscreen)   v.webkitEnterFullscreen();
+    });
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+
+    document.querySelectorAll('.photo-slot img').forEach(img => {
+      img.addEventListener('click', () => {
+        if (!img.src || img.src === window.location.href) return;
+        lightboxImg.src = img.src;
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
+
+  <script>
+    window.addEventListener('load', function () {
+    (function () {
+      const names = {
+        4:"Afghanistan",8:"Albania",12:"Algeria",24:"Angola",32:"Argentina",36:"Australia",40:"Austria",50:"Bangladesh",56:"Belgium",64:"Bhutan",68:"Bolivia",76:"Brazil",100:"Bulgaria",104:"Myanmar",116:"Cambodia",120:"Cameroon",124:"Canada",144:"Sri Lanka",152:"Chile",156:"China",170:"Colombia",178:"Congo",180:"DR Congo",188:"Costa Rica",192:"Cuba",203:"Czech Republic",204:"Benin",208:"Denmark",218:"Ecuador",818:"Egypt",231:"Ethiopia",246:"Finland",250:"France",276:"Germany",288:"Ghana",300:"Greece",320:"Guatemala",332:"Haiti",340:"Honduras",348:"Hungary",356:"India",360:"Indonesia",364:"Iran",368:"Iraq",372:"Ireland",376:"Israel",380:"Italy",388:"Jamaica",392:"Japan",400:"Jordan",404:"Kenya",408:"North Korea",410:"South Korea",414:"Kuwait",418:"Laos",422:"Lebanon",430:"Liberia",434:"Libya",440:"Lithuania",458:"Malaysia",484:"Mexico",504:"Morocco",508:"Mozambique",524:"Nepal",528:"Netherlands",554:"New Zealand",566:"Nigeria",578:"Norway",586:"Pakistan",591:"Panama",598:"Papua New Guinea",604:"Peru",608:"Philippines",616:"Poland",620:"Portugal",634:"Qatar",642:"Romania",643:"Russia",682:"Saudi Arabia",694:"Sierra Leone",706:"Somalia",710:"South Africa",724:"Spain",729:"Sudan",752:"Sweden",756:"Switzerland",760:"Syria",762:"Tajikistan",764:"Thailand",792:"Turkey",800:"Uganda",804:"Ukraine",784:"UAE",826:"United Kingdom",840:"United States",858:"Uruguay",862:"Venezuela",704:"Vietnam",887:"Yemen",716:"Zimbabwe",233:"Estonia",352:"Iceland",702:"Singapore",703:"Slovakia",705:"Slovenia",440:"Lithuania",428:"Latvia",112:"Belarus",498:"Moldova",191:"Croatia",688:"Serbia",807:"North Macedonia",70:"Bosnia & Herz.",499:"Montenegro",470:"Malta",196:"Cyprus"
+      };
+      const visitedColors = {
+        276:'#7aaec8',578:'#5fa8a8',40:'#b09ac8',352:'#7ab8d8',250:'#84b87c',380:'#d4a870',203:'#c88080',246:'#6ab8a8',752:'#98c480',233:'#c8a860',643:'#a888c8',616:'#c87868',208:'#68aab8',528:'#d4a85c',764:'#78b888',360:'#c4b86c',702:'#c87878',458:'#6e94c8',36:'#68b888',554:'#78aec8',156:'#c86060'
+      };
+      const visitedHover = {
+        276:'#5490ae',578:'#3d8c8c',40:'#9278b0',352:'#5898bc',250:'#619a58',380:'#b88850',203:'#aa6060',246:'#489890',752:'#76a860',233:'#a88840',643:'#8c68ae',616:'#a85848',208:'#469298',528:'#b88840',764:'#549870',360:'#a89848',702:'#aa5858',458:'#4e74ae',36:'#449870',554:'#548eae',156:'#aa4040'
+      };
+
+      const tooltip = document.getElementById('map-tooltip');
+      const container = document.getElementById('world-map');
+      const W = container.clientWidth;
+      const H = container.clientHeight;
+
+      // Asia-centered, zoomed into Eurasia; Americas visible at right edge
+      const eurasiaBox = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [[
+        [20, 25], [130, 25], [130, 62], [20, 62], [20, 25]
+      ]] } };
+      const projection = d3.geoNaturalEarth1()
+        .rotate([-135, 0])
+        .fitExtent([[W * 0.02, H * 0.04], [W * 0.98, H * 0.96]], eurasiaBox);
+
+      const path = d3.geoPath().projection(projection);
+
+      const svg = d3.select('#world-map')
+        .append('svg').attr('width', W).attr('height', H);
+
+      const defs = svg.append('defs');
+      defs.append('clipPath').attr('id', 'map-clip-living')
+        .append('rect').attr('width', W).attr('height', H);
+
+      const g = svg.append('g').attr('clip-path', 'url(#map-clip-living)');
+
+      d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(world => {
+        const countries = topojson.feature(world, world.objects.countries);
+        const borders   = topojson.mesh(world, world.objects.countries, (a, b) => a !== b);
+
+        g.append('path').datum({ type: 'Sphere' })
+          .attr('d', path).attr('fill', 'none').attr('stroke', 'none');
+
+        const cp = g.selectAll('.country')
+          .data(countries.features).join('path')
+          .attr('class', 'country').attr('d', path)
+          .attr('fill', d => visitedColors[+d.id] || '#1a1917')
+          .attr('stroke', 'rgba(255,255,255,0.18)').attr('stroke-width', 0.4)
+          .style('cursor', d => visitedColors[+d.id] ? 'pointer' : 'default')
+          .style('filter', 'none')
+          .style('opacity', 0);
+
+        cp.transition().duration(1000).delay((d, i) => 80 + i * 4).style('opacity', 1);
+
+        g.append('path').datum(borders)
+          .attr('d', path).attr('fill', 'none')
+          .attr('stroke', 'rgba(255,255,255,0.18)').attr('stroke-width', 0.4);
+
+        cp.on('mouseover', function(event, d) {
+            const id = +d.id, isV = !!visitedColors[id];
+            if (isV) d3.select(this).style('filter', 'none')
+              .transition().duration(100).attr('fill', visitedHover[id]);
+            const name = names[id];
+            if (name) { tooltip.textContent = (isV ? '✦ ' : '') + name; tooltip.style.display = 'block'; }
+          })
+          .on('mousemove', e => {
+            tooltip.style.left = (e.clientX + 14) + 'px';
+            tooltip.style.top  = (e.clientY - 28) + 'px';
+          })
+          .on('mouseout', function(event, d) {
+            const id = +d.id;
+            if (visitedColors[id]) d3.select(this)
+              .style('filter', 'url(#glow-living)')
+              .transition().duration(300).attr('fill', visitedColors[id]);
+            tooltip.style.display = 'none';
+          });
+      });
+    })();
+    }); // window load
+  </script>
+</body>
+</html>
