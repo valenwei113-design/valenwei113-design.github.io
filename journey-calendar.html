@@ -541,7 +541,7 @@ function getYears() {
   const now = new Date().getFullYear();
   const ks  = Object.keys(data).map(k => +k.split('-')[0]);
   const min = Math.min(2024, ...ks);
-  const max = Math.max(now, ...ks);
+  const max = Math.max(now + 1, ...ks);
   return Array.from({length: max - min + 1}, (_, i) => min + i);
 }
 
