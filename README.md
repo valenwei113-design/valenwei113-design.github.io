@@ -6,7 +6,7 @@ Personal website — a visual journal of travel, life, and learning.
 
 | Page | File | Description |
 |------|------|-------------|
-| **Home** | `homepage.html` | Full-screen video slideshow cycling through 6 locations. Background music with spinning vinyl toggle. Click the name to enter the Journey tree. |
+| **Home** | `index.html` | Full-screen video slideshow cycling through 6 locations. Background music with spinning vinyl toggle. Click the name to enter the Journey tree. |
 | **Journey** | `journey.html` | Interactive SVG tree with ~2300 procedurally-generated leaves and 22 animated falling leaves. Navigation hub linking to all sub-pages. |
 | **Vibe Coding** | `journey-vibe coding.html` | Web application projects — "Offer Coming" job search dashboard screenshots and link. |
 | **德国留学** | `journey-germany.html` | Study abroad in Germany — university types, application process, APS certification, costs, ECTS & grading system, student life photos and videos. |
@@ -18,7 +18,7 @@ Personal website — a visual journal of travel, life, and learning.
 ## Navigation Flow
 
 ```
-homepage.html → journey.html → ├─ journey-vibe coding.html
+index.html → journey.html → ├─ journey-vibe coding.html
                                 ├─ journey-germany.html
                                 ├─ journey-norway.html
                                 ├─ journey-work exchange.html
@@ -43,7 +43,7 @@ Plain HTML + Tailwind CSS CDN + D3.js (maps) + SVG animations. No frameworks, no
 ## Directory Structure
 
 ```
-├── homepage.html
+├── index.html
 ├── journey.html
 ├── journey-calendar.html
 ├── journey-germany.html
