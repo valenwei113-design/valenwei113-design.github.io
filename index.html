@@ -90,30 +90,20 @@
   <main class="relative h-screen w-full overflow-hidden">
 
     <!-- Full-screen video backgrounds -->
-    <video id="bg-vid-0" autoplay muted playsinline
+    <video id="bg-vid-0" autoplay muted playsinline preload="auto" poster="home/jacaranda-poster.jpg"
            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:1;">
-      <source src="home/jacaranda.mov" />
+      <source src="home/jacaranda.mp4" type="video/mp4" />
     </video>
-    <video id="bg-vid-1" muted playsinline
-           class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;">
-      <source src="home/norway.mov" />
-    </video>
-    <video id="bg-vid-2" muted playsinline
-           class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;">
-      <source src="home/Manta.mov" />
-    </video>
-    <video id="bg-vid-3" muted playsinline
-           class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;">
-      <source src="home/diving.mov" />
-    </video>
-    <video id="bg-vid-4" muted playsinline
-           class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;">
-      <source src="home/stavanger.mov" />
-    </video>
-    <video id="bg-vid-5" muted playsinline
-           class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;">
-      <source src="home/iceland.mov" />
-    </video>
+    <video id="bg-vid-1" muted playsinline preload="none" data-src="home/norway.mp4" data-poster="home/norway-poster.jpg"
+           class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;"></video>
+    <video id="bg-vid-2" muted playsinline preload="none" data-src="home/Manta.mp4" data-poster="home/Manta-poster.jpg"
+           class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;"></video>
+    <video id="bg-vid-3" muted playsinline preload="none" data-src="home/diving.mp4" data-poster="home/diving-poster.jpg"
+           class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;"></video>
+    <video id="bg-vid-4" muted playsinline preload="none" data-src="home/stavanger.mp4" data-poster="home/stavanger-poster.jpg"
+           class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;"></video>
+    <video id="bg-vid-5" muted playsinline preload="none" data-src="home/iceland.mp4" data-poster="home/iceland-poster.jpg"
+           class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;"></video>
 
 
     <!-- Gradient overlays -->
@@ -135,13 +125,19 @@
          style="letter-spacing:0.32em; animation-delay:0.55s;">
         LIVING SLOWLY &nbsp;·&nbsp; MOVING FREELY
       </p>
+      <a href="services.html" class="name-reveal font-light text-xs mt-4"
+         style="color:rgba(255,255,255,0.25); letter-spacing:0.2em; animation-delay:0.7s; text-decoration:none; transition:color 0.3s;"
+         onmouseenter="this.style.color='rgba(255,255,255,0.55)'"
+         onmouseleave="this.style.color='rgba(255,255,255,0.25)'">
+        SERVICES →
+      </a>
     </div>
 
 
   </main>
 
   <!-- Background music -->
-  <audio id="bg-music" loop preload="auto">
+  <audio id="bg-music" loop preload="none">
     <source src="home/Ellie Goulding-How Long Will I Love You.mp3" type="audio/mpeg" />
   </audio>
 
@@ -159,13 +155,47 @@
     const videos = [0, 1, 2, 3, 4, 5].map(i => document.getElementById('bg-vid-' + i));
     let curIdx = 0;
 
+    // Lazy loading — only the first video loads up front; the rest get their src on demand
+    function loadVideo(v) {
+      if (!v.dataset.src) return;
+      v.poster = v.dataset.poster;
+      v.src = v.dataset.src;
+      v.removeAttribute('data-src');
+      v.preload = 'auto';
+      v.load();
+    }
+
+    function isBuffered(v) {
+      return v.buffered.length > 0 && v.duration > 0 &&
+             v.buffered.end(v.buffered.length - 1) >= v.duration - 0.1;
+    }
+
+    // Prefetch the next video once the current one is fully buffered (or half played)
+    function whenReady(v, fn) {
+      let done = false;
+      const check = () => {
+        if (done) return;
+        if (isBuffered(v) || (v.duration > 0 && v.currentTime >= v.duration / 2)) {
+          done = true;
+          v.removeEventListener('progress', check);
+          v.removeEventListener('timeupdate', check);
+          fn();
+        }
+      };
+      v.addEventListener('progress', check);
+      v.addEventListener('timeupdate', check);
+      check();
+    }
+
     function showVideo(idx) {
+      loadVideo(videos[idx]);
       videos.forEach((v, i) => { v.style.opacity = i === idx ? '1' : '0'; });
       videos[idx].play().catch(() => {});
       videos[idx].onended = () => {
         curIdx = (curIdx + 1) % videos.length;
         showVideo(curIdx);
       };
+      whenReady(videos[idx], () => loadVideo(videos[(idx + 1) % videos.length]));
     }
 
     showVideo(0);
@@ -177,7 +207,11 @@
 
     audio.volume = 0.35;
 
-    window.addEventListener('load', () => {
+    // Music is preload="none"; try autoplay only after the first video has buffered
+    // so the mp3 doesn't compete with it for bandwidth
+    let musicTouched = false;
+    window.addEventListener('load', () => whenReady(videos[0], () => {
+      if (musicTouched) return;
       audio.play().then(() => {
         btn.classList.add('playing');
         label.classList.add('visible');
@@ -188,9 +222,10 @@
           btn.classList.add('playing');
         }, { once: true });
       });
-    });
+    }));
 
     function toggleMusic() {
+      musicTouched = true;
       if (audio.paused) {
         audio.play();
         btn.classList.add('playing');
