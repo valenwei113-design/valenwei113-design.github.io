@@ -90,29 +90,29 @@
   <main class="relative h-screen w-full overflow-hidden">
 
     <!-- Full-screen video backgrounds -->
-    <video id="bg-vid-0" autoplay muted playsinline
+    <video id="bg-vid-0" muted playsinline preload="auto" poster="home/jacaranda-poster.jpg"
            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:1;">
-      <source src="home/jacaranda.mov" />
+      <source src="home/jacaranda.mp4" type="video/mp4" />
     </video>
-    <video id="bg-vid-1" muted playsinline
+    <video id="bg-vid-1" muted playsinline preload="none"
            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;">
-      <source src="home/norway.mov" />
+      <source src="home/norway.mp4" type="video/mp4" />
     </video>
-    <video id="bg-vid-2" muted playsinline
+    <video id="bg-vid-2" muted playsinline preload="none"
            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;">
-      <source src="home/Manta.mov" />
+      <source src="home/Manta.mp4" type="video/mp4" />
     </video>
-    <video id="bg-vid-3" muted playsinline
+    <video id="bg-vid-3" muted playsinline preload="none"
            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;">
-      <source src="home/diving.mov" />
+      <source src="home/diving.mp4" type="video/mp4" />
     </video>
-    <video id="bg-vid-4" muted playsinline
+    <video id="bg-vid-4" muted playsinline preload="none"
            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;">
-      <source src="home/stavanger.mov" />
+      <source src="home/stavanger.mp4" type="video/mp4" />
     </video>
-    <video id="bg-vid-5" muted playsinline
+    <video id="bg-vid-5" muted playsinline preload="none"
            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]" style="opacity:0;">
-      <source src="home/iceland.mov" />
+      <source src="home/iceland.mp4" type="video/mp4" />
     </video>
 
 
@@ -147,7 +147,7 @@
   </main>
 
   <!-- Background music -->
-  <audio id="bg-music" loop preload="auto">
+  <audio id="bg-music" loop preload="none">
     <source src="home/Ellie Goulding-How Long Will I Love You.mp3" type="audio/mpeg" />
   </audio>
 
@@ -161,29 +161,91 @@
   <span id="music-label">How Long Will I Love You — Ellie Goulding</span>
 
   <script>
-    // Video slideshow — each video plays to end then switches to next
+    // Video slideshow — each video plays to end then switches to next.
+    // Only the first video preloads; the next one starts loading while the
+    // current one plays. The current frame stays visible until the next video
+    // is actually playing, and videos that fail or stall are skipped.
     const videos = [0, 1, 2, 3, 4, 5].map(i => document.getElementById('bg-vid-' + i));
+    const failed = new Set();
+    const STALL_MS = 15000;
     let curIdx = 0;
+    let pendingIdx = null;
+    let watchdog = null;
 
-    function showVideo(idx) {
-      videos.forEach((v, i) => { v.style.opacity = i === idx ? '1' : '0'; });
-      videos[idx].play().catch(() => {});
-      videos[idx].onended = () => {
-        curIdx = (curIdx + 1) % videos.length;
-        showVideo(curIdx);
-      };
+    function preload(v) {
+      if (v.preload !== 'auto') {
+        v.preload = 'auto';
+        v.load();
+      }
     }
 
-    showVideo(0);
+    function nextIdx(from) {
+      for (let s = 1; s <= videos.length; s++) {
+        const i = (from + s) % videos.length;
+        if (!failed.has(i)) return i;
+      }
+      return -1;
+    }
 
-    // Music
+    function playVideo(idx) {
+      if (idx < 0) return;
+      const v = videos[idx];
+      pendingIdx = idx;
+      preload(v);
+      if (v.readyState > 0) v.currentTime = 0;
+      clearTimeout(watchdog);
+      watchdog = setTimeout(() => skip(idx), STALL_MS);
+      v.play().catch(() => {});
+    }
+
+    function skip(idx) {
+      if (idx !== pendingIdx) return;
+      videos[idx].pause();
+      const n = nextIdx(idx);
+      if (n !== idx) playVideo(n);
+    }
+
+    function fail(idx) {
+      if (failed.has(idx)) return;
+      failed.add(idx);
+      skip(idx);
+    }
+
+    videos.forEach((v, i) => {
+      v.addEventListener('playing', () => {
+        if (i !== pendingIdx) return;
+        clearTimeout(watchdog);
+        pendingIdx = null;
+        curIdx = i;
+        videos.forEach((w, j) => { w.style.opacity = j === i ? '1' : '0'; });
+        const n = nextIdx(i);
+        if (n >= 0) preload(videos[n]);
+        startMusic();
+      });
+      v.addEventListener('ended', () => {
+        if (i === curIdx) playVideo(nextIdx(i));
+      });
+      v.addEventListener('error', () => fail(i));
+      v.querySelector('source').addEventListener('error', () => fail(i));
+    });
+
+    playVideo(0);
+
+    // Music — loads only after the first video is playing, so it doesn't
+    // compete with it for bandwidth
     const audio = document.getElementById('bg-music');
     const btn   = document.getElementById('music-btn');
     const label = document.getElementById('music-label');
+    let musicStarted = false;
 
     audio.volume = 0.35;
 
-    window.addEventListener('load', () => {
+    // Fallback in case no video manages to play
+    setTimeout(startMusic, STALL_MS);
+
+    function startMusic() {
+      if (musicStarted) return;
+      musicStarted = true;
       audio.play().then(() => {
         btn.classList.add('playing');
         label.classList.add('visible');
@@ -194,7 +256,7 @@
           btn.classList.add('playing');
         }, { once: true });
       });
-    });
+    }
 
     function toggleMusic() {
       if (audio.paused) {
