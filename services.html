@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Services · Valen Wei</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      overflow: hidden;
+      background: #000000;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeBlur {
+      from { opacity: 0; filter: blur(6px); letter-spacing: 0.18em; }
+      to   { opacity: 1; filter: blur(0);   letter-spacing: 0.06em; }
+    }
+    .fade-blur {
+      opacity: 0;
+      animation: fadeBlur 1.4s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up {
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards;
+    }
+
+    /* ── Layout ── */
+    .page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 60px 40px;
+    }
+
+    .heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 400;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 0.06em;
+      margin-bottom: 56px;
+      text-align: center;
+    }
+
+    /* ── Service Cards Grid ── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      max-width: 620px;
+      width: 100%;
+    }
+
+    .service-card {
+      display: flex;
+      flex-direction: column;
+      padding: 28px 30px 24px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-top-width: 2px;
+      transition: background 0.35s ease, border-color 0.35s ease, transform 0.35s ease;
+    }
+    .service-card:hover {
+      background: rgba(255,255,255,0.06);
+      transform: translateY(-3px);
+    }
+
+    .service-card.accent-rose   { border-top-color: #c4a8a0; }
+    .service-card.accent-sage   { border-top-color: #a0b4a0; }
+    .service-card.accent-blue   { border-top-color: #8a9fb8; }
+    .service-card.accent-ochre  { border-top-color: #c4b898; }
+
+    .service-card:hover.accent-rose  { border-color: rgba(196,168,160,0.25); }
+    .service-card:hover.accent-sage  { border-color: rgba(160,180,160,0.25); }
+    .service-card:hover.accent-blue  { border-color: rgba(138,159,184,0.25); }
+    .service-card:hover.accent-ochre { border-color: rgba(196,184,152,0.25); }
+
+    .service-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(18px, 2.2vw, 24px);
+      font-weight: 400;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .service-desc {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 13px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ── CTA ── */
+    .cta {
+      margin-top: 44px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .cta:hover {
+      color: rgba(255,255,255,0.65);
+    }
+
+    /* ── Back link ── */
+    .back {
+      position: fixed;
+      bottom: 24px;
+      right: 28px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.22);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .back:hover { color: rgba(255,255,255,0.85); }
+
+    /* ── Mobile ── */
+    @media (max-width: 520px) {
+      .services-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .heading {
+        margin-bottom: 36px;
+      }
+      .service-card {
+        padding: 22px 24px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page">
+
+    <h1 class="heading fade-blur" style="animation-delay:0.2s;">What I Can Do For You</h1>
+
+    <div class="services-grid">
+
+      <div class="service-card accent-blue fade-up" style="animation-delay:0.35s;">
+        <div class="service-name">Business Analyst for Fintech</div>
+        <div class="service-desc">Requirements, process design &amp; product strategy</div>
+      </div>
+
+      <div class="service-card accent-rose fade-up" style="animation-delay:0.5s;">
+        <div class="service-name">Supplier Management</div>
+        <div class="service-desc">Sourcing, negotiation &amp; quality control from China</div>
+      </div>
+
+      <div class="service-card accent-sage fade-up" style="animation-delay:0.65s;">
+        <div class="service-name">Chinese Teaching</div>
+        <div class="service-desc">Mandarin lessons with cultural context</div>
+      </div>
+
+      <div class="service-card accent-ochre fade-up" style="animation-delay:0.8s;">
+        <div class="service-name">Travel Planning</div>
+        <div class="service-desc">Itineraries shaped by real experience</div>
+      </div>
+
+    </div>
+
+    <a href="mailto:valenwei113@gmail.com" class="cta fade-up" style="animation-delay:1s;">Get in touch →</a>
+
+  </div>
+
+  <a href="index.html" class="back">← Back</a>
+
+</body>
+</html>
